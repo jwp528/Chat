@@ -1,0 +1,17 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+POST https://api.openai.com/v1/chat/completions
+Authorization Bearer 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
+
+{
+  "model": "gpt-3.5-turbo"
+  "messages":[
+    {
+      "role": "user",
+      "content": "Hello chat. My name is Josh. Are you ready to get to work?"
+    }
+  ]
+}
+###
+
+

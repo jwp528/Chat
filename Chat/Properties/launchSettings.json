@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Chat": {
+      "commandName": "Project",
+      "commandLineArgs": "Good morning. Are you ready to solve some problems?"
+    }
+  }
+}
