@@ -44,6 +44,7 @@ public class ChatService
         };
     }
 
+    // commented out models are models that I haven't tested or have received 404 errors for.
     private string ParseModel(OpenAI_Models model)
     {
         return model switch
@@ -90,6 +91,7 @@ public class ChatService
 
     public static void SetKey(string apikey)
     {
+        // TODO: refactor to use User secrets to make this multi platform.
         Registry.SetValue(EnvironmentVariables.REGISTRY_KEY, EnvironmentVariables.OPENAI_API_KEY, apikey);
     }
 }
