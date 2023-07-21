@@ -7,12 +7,12 @@ using Chat.Models;
 using Chat.Services;
 using CommandLine;
 
-
 var parser = new CommandLine.Parser();
 
 var result = parser.ParseArguments<Options>(args);
 
 await result.WithParsedAsync(HandleOptions);
+await result.WithNotParsedAsync(HandleParseError);
 
 
 async Task HandleOptions(Options options)
@@ -21,6 +21,8 @@ async Task HandleOptions(Options options)
     {
         options.Query = string.Join(' ', args);
     }
+
+    ChatService chat = new ChatService();
 
     while (true)
     {
@@ -44,14 +46,7 @@ async Task HandleOptions(Options options)
 
         try
         {
-            ChatRequest request = new ChatRequest()
-            {
-                Query = options.Query,
-                Endpoint = options.Endpoint,
-                Model = options.Model,
-            };
-
-            ChatService chat = new ChatService();
+            ChatRequest request = new ChatRequest(options);
             var response = await chat.Chat(request);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -71,8 +66,8 @@ async Task HandleOptions(Options options)
        
 }
 
-void HandleParseError(IEnumerable<Error> errors)
+async Task HandleParseError(IEnumerable<Error> errors)
 {
     // Handle parse errors if any
-    Console.WriteLine("Failed to parse arguments.");
+    Console.WriteLine("Failed to parse arguments.");    
 }

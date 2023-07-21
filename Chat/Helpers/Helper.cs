@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Chat.Models;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,16 +12,14 @@ namespace Chat.Helpers;
 
 public static class Helper
 {
-    public static object[] GetMessages(string[] chatHistory, string userMessage)
+    public static object[] GetMessages(List<ChatMessage> chatHistory, string userMessage)
     {
         List<object> messages = new List<object>();
 
-        foreach (string message in chatHistory)
+        foreach (ChatMessage message in chatHistory)
         {
-            messages.Add(new { role = "user", content = message });
+            messages.Add(new { role = message.Role, content = message.Content });
         }
-
-        messages.Add(new { role = "user", content = userMessage });
 
         return messages.ToArray();
     }

@@ -4,7 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # User-specific files
-*.appsettings.json
+appsettings.json
+appsettings.*.json
+Http/
 *.rsuser
 *.suo
 *.user
@@ -397,4 +399,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/Chat/appsettings.json

@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Chat.Models;
+namespace Chat.Enums;
 
-public class ChatChoice
+public enum OpenAI_MessageRoles
 {
-    public ChatMessage Message { get; set; }
+    system,
+    user,
+    assistant,
+    function
 }

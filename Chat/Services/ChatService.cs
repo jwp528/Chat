@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Chat.Constants;
 using Chat.Constants.OpenAI;
@@ -18,7 +19,7 @@ public class ChatService
 {
     private readonly HttpClient client;
     private const int HISTORY_LIMIT = 10;
-
+    private Queue<ChatMessage> messageQueue;
     public ChatService()
     {
         string key = (string) Registry.GetValue("HKEY_CURRENT_USER\\Environment", $"{EnvironmentVariables.OPENAI_API_KEY}", string.Empty);
@@ -30,9 +31,8 @@ public class ChatService
 
         client = new HttpClient();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {key}");
+        messageQueue = new Queue<ChatMessage>();
     }
-
-    Queue<string> messageQueue = new Queue<string>();
 
     private string ParseEndpoint(OpenAI_Endpoints endpoint)
     {
@@ -63,30 +63,46 @@ public class ChatService
 
     public async Task<ChatResponse> Chat(ChatRequest request)
     {
-        messageQueue.Enqueue(request.Query);
+        ChatMessage message = new()
+        {
+            Role = "user",
+            Content = request.Query
+        };
+
+        messageQueue.Enqueue(message);
 
         if (messageQueue.Count >= HISTORY_LIMIT)
         {
             messageQueue.Dequeue();
         }
 
-        string[] chatHistory = messageQueue.ToArray();
-
         var requestBody = new
         {
             model = ParseModel(request.Model),
-            messages = Helper.GetMessages(chatHistory, request.Query),
+            messages = messageQueue.ToList()
         };
 
         string endpoint = ParseEndpoint(request.Endpoint);
 
-        HttpResponseMessage response = await client.PostAsJsonAsync(endpoint, requestBody);
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            // TODO: handle potential errors
-        }
+            HttpResponseMessage response = await client.PostAsJsonAsync(endpoint, requestBody);
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO: handle potential errors
+            }
 
-        return await response.Content.ReadFromJsonAsync<ChatResponse>();
+            ChatResponse chatResponse = await response.Content.ReadFromJsonAsync<ChatResponse>();
+
+            messageQueue.Enqueue(chatResponse.Choices[0].Message);
+
+            return chatResponse;
+
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
     }
 
     public static void SetKey(string apikey)

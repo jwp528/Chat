@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Chat.Models;
 
-public class ChatMessage
+public class ChatChoice
 {
-    public string Content { get; set; }
+    public int Index { get; set; }
+
+    public ChatMessage Message { get; set; }
+
+    public string FinishReason { get; set; }
 }
